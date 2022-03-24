@@ -25,6 +25,34 @@ class LoginActivity : AppCompatActivity() {
             val password = findViewById<EditText>(R.id.et_password).text.toString()
             loginUser(username, password)
         }
+
+        findViewById<Button>(R.id.signupBtn).setOnClickListener {
+            val username = findViewById<EditText>(R.id.et_username).text.toString()
+            val password = findViewById<EditText>(R.id.et_password).text.toString()
+            signUpUser(username, password)
+        }
+    }
+
+    private fun signUpUser(username: String, password: String) {
+        // Create the ParseUser
+        val user = ParseUser()
+
+        // Set fields for the user to be created
+        user.setUsername(username)
+        user.setPassword(password)
+
+        user.signUpInBackground { e ->
+            if (e == null) {
+                // User has successfully created a new account
+                Toast.makeText(this, "Account created", Toast.LENGTH_SHORT).show()
+                Log.i(TAG, "Account created")
+                goToMainActivity()
+
+            } else {
+                e.printStackTrace()
+                Toast.makeText(this, "Signup was not successful", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun loginUser(username: String, password: String) {
