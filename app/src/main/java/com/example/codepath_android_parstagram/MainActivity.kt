@@ -1,6 +1,7 @@
 package com.example.codepath_android_parstagram
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -16,7 +17,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.parse.*
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 
 
 /**
@@ -25,7 +28,8 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     val CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034
-    val photoFileName = "photo.jpg"
+    val photoFileName = "photo"
+    val photoFileExtension = ".jpg"
     var photoFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnTakePicture).setOnClickListener {
             // Launch camera to let user take picture
             onLaunchCamera()
+
+            Log.i(TAG, "photoFile: ${photoFile.toString()}")
         }
 
         // queryPosts()
@@ -125,10 +131,24 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == RESULT_OK) {
                 // by this point we have the camera photo on disk
                 val takenImage = BitmapFactory.decodeFile(photoFile!!.absolutePath)
-                // RESIZE BITMAP, see section below
+                // Resize the bitmap
+                val resizedBitmap = BitmapScaler.scaleToFitWidth(takenImage, 480)
                 // Load the taken image into a preview
                 val ivPreview: ImageView = findViewById(R.id.ivPicture)
-                ivPreview.setImageBitmap(takenImage)
+                ivPreview.setImageBitmap(resizedBitmap)
+
+                // Configure byte output stream
+                val bytes = ByteArrayOutputStream()
+                // Compress the image further
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes)
+                // Create a new file for the resized bitmap
+                photoFile = getPhotoFileUri(photoFileName + "_resized" + photoFileExtension)
+                photoFile!!.createNewFile()
+                val fos = FileOutputStream(photoFile)
+                // Write the bytes of the bitmap to file
+                fos.write(bytes.toByteArray())
+                fos.close()
+
             } else { // Result was a failure
                 Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show()
             }
@@ -139,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         // create Intent to take a picture and return control to the calling application
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // Create a File reference for future access
-        photoFile = getPhotoFileUri(photoFileName)
+        photoFile = getPhotoFileUri(photoFileName + photoFileExtension)
 
         // wrap File object into a content provider
         // required for API >= 24
@@ -148,9 +168,6 @@ class MainActivity : AppCompatActivity() {
             val fileProvider: Uri =
                 FileProvider.getUriForFile(this, "com.codepath.fileprovider", photoFile!!)
             intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
-
-            // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
-            // So as long as the result is not null, it's safe to use the intent.
 
             // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
             // So as long as the result is not null, it's safe to use the intent.
