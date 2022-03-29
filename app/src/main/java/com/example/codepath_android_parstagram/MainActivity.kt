@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.parse.*
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -59,6 +60,28 @@ class MainActivity : AppCompatActivity() {
             onLaunchCamera()
 
             Log.i(TAG, "photoFile: ${photoFile.toString()}")
+        }
+
+        findViewById<BottomNavigationView>(R.id.bottom_navigation).setOnItemSelectedListener {
+            item ->
+
+            when (item.itemId) {
+                R.id.action_home -> {
+                    // todo: navigate to the home screen
+                    Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
+                }
+                R.id.action_compose -> {
+                    // todo: navigate to the compose screen
+                    Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show()
+                }
+                R.id.action_profile -> {
+                    // todo: navigate to the profile screen
+                    Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            // Return true to say that we've handled this user interaction on the item
+            true
         }
 
         // queryPosts()
