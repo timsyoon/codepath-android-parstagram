@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.codepath_android_parstagram.MainActivity
 import com.example.codepath_android_parstagram.Post
 import com.example.codepath_android_parstagram.PostAdapter
@@ -16,10 +17,12 @@ import com.parse.FindCallback
 import com.parse.ParseException
 import com.parse.ParseQuery
 
-class FeedFragment : Fragment() {
+open class FeedFragment : Fragment() {
 
     lateinit var rvPosts: RecyclerView
     lateinit var adapter: PostAdapter
+    lateinit var swipeContainer: SwipeRefreshLayout
+
     var allPosts: MutableList<Post> = mutableListOf()
 
     override fun onCreateView(
@@ -35,6 +38,16 @@ class FeedFragment : Fragment() {
 
         // Set up views and click listeners
         rvPosts = view.findViewById(R.id.rvPosts)
+        swipeContainer = view.findViewById(R.id.swipeContainer)
+        swipeContainer.setOnRefreshListener {
+            queryPosts()
+        }
+
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light)
 
         adapter = PostAdapter(requireContext(), allPosts)
         rvPosts.adapter = adapter
@@ -44,8 +57,7 @@ class FeedFragment : Fragment() {
     }
 
     // Query for all posts in our server
-    fun queryPosts() {
-
+    open fun queryPosts() {
         // Specify which class to query
         val query: ParseQuery<Post> = ParseQuery.getQuery(Post::class.java)
         // Find all Post objects
@@ -66,12 +78,13 @@ class FeedFragment : Fragment() {
                             Log.i(TAG, "Post: " + post.getDescription() + " , username: " +
                                     post.getUser()?.username)
                         }
-                        allPosts.addAll(posts)
-                        adapter.notifyDataSetChanged()
+                        adapter.clear()
+                        adapter.addAll(posts)
+                        // Signal that the refresh has finished
+                        swipeContainer.setRefreshing(false)
                     }
                 }
             }
-
         })
     }
 

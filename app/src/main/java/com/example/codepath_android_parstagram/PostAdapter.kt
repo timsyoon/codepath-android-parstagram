@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 // Create the basic adapter extending from RecyclerView.Adapter
-class PostAdapter(val context: Context, val posts: List<Post>) : RecyclerView.Adapter<PostAdapter.ViewHolder>() {
+class PostAdapter(val context: Context, val posts: MutableList<Post>) : RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
@@ -42,5 +42,15 @@ class PostAdapter(val context: Context, val posts: List<Post>) : RecyclerView.Ad
 
     override fun getItemCount(): Int {
         return posts.size
+    }
+
+    fun clear() {
+        posts.clear()
+        notifyDataSetChanged()
+    }
+
+    fun addAll(postList: MutableList<Post>) {
+        posts.addAll(postList)
+        notifyDataSetChanged()
     }
 }

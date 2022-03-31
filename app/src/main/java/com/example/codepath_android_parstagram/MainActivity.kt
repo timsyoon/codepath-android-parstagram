@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.codepath_android_parstagram.fragments.ComposeFragment
 import com.example.codepath_android_parstagram.fragments.FeedFragment
+import com.example.codepath_android_parstagram.fragments.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.parse.FindCallback
 import com.parse.ParseException
@@ -43,8 +44,7 @@ class MainActivity : AppCompatActivity() {
                     fragmentToShow = ComposeFragment()
                 }
                 R.id.action_profile -> {
-                    // todo: navigate to the profile screen
-                    Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
+                    fragmentToShow = ProfileFragment()
                 }
             }
 
