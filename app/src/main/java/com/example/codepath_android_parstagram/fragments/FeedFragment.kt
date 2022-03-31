@@ -52,8 +52,8 @@ class FeedFragment : Fragment() {
         query.include(Post.KEY_USER)
         // Return posts in descending order (newest posts first)
         query.addDescendingOrder("createdAt")
-
-        // todo: only return the most recent 20 posts
+        // Return the 20 most recent posts. POST_LIMIT defined in companion object
+        query.setLimit(POST_LIMIT)
 
         query.findInBackground(object : FindCallback<Post> {
             override fun done(posts: MutableList<Post>?, e: ParseException?) {
@@ -77,5 +77,6 @@ class FeedFragment : Fragment() {
 
     companion object {
         const val TAG = "FeedFragment"
+        const val POST_LIMIT = 20
     }
 }
